@@ -1,6 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 
+
 const Login = () => {
     const [error, setError] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -15,8 +16,11 @@ const Login = () => {
             const {data} = await axios.get("https://jsonplaceholder.typicode.com/users/1")
             setUser(data)
         } catch {
+            
             setError(true)
         }
+
+        setLoading(false)
     }
 
     return (

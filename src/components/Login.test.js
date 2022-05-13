@@ -1,6 +1,17 @@
-import { fireEvent, render , screen } from "@testing-library/react"
-import { toBeInTheDocument, toBe, toBeDisabled,ToBeVisible, toHaveTextContent } from "@testing-library/jest-dom"
+import { fireEvent, render , screen, waitFor } from "@testing-library/react"
+import { toBeInTheDocument, toBe, toBeDisabled,ToBeVisible, toHaveTextContent, mock } from "@testing-library/jest-dom"
 import Login from './login/Login'
+
+
+jest.mock("axios", () => ({
+    __esModule: true,
+    default: {
+        get: () => ({
+            data: {id: 1, name: "John"}
+        })
+    }
+}))
+
 
 test("username input should rendered", () => {
     render(<Login />)
@@ -92,4 +103,25 @@ test("loading should be rendered when click", () => {
     fireEvent.click(buttonEl)
     expect(buttonEl).toHaveTextContent(/please wait/i)
 })
+
+
+
+test("loading should be rendered after fetching", async () => {
+    render(<Login />)
+    const buttonEl = screen.getByRole("button")
+    const userInputEl = screen.getByPlaceholderText(/username/i)
+    const passwordInputEl = screen.getByPlaceholderText(/password/i)
+
+    const testValue = "test"
+
+    fireEvent.change(passwordInputEl, {target: {value: testValue}})
+    fireEvent.change(userInputEl, {target: {value: testValue}})
+    fireEvent.click(buttonEl)
+
+
+    const userItem = await screen.findByText("John")
+
+    expect(userItem).toBeInTheDocument()
+})
+
 
